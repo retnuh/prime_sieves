@@ -1,0 +1,15 @@
+opam-version: "2.0"
+name: "prime_sieves"
+version: "1.0.0"
+maintainer: "Hunter Kelly <retnuh@gmail.com>"
+authors: ["Hunter Kelly <retnuh@gmail.com>"]
+homepage: "https://github.com/retnuh/prime_sieves"
+bug-reports: "https://github.com/retnuh/prime_sieves/issues"
+dev-repo: "git@github.com:retnuh/prime_sieves.git"
+license: ["ISC"]
+tags: []
+build: [["jbuilder" "build" "-p" name "-j" jobs]]
+build-test: [["jbuilder" "runtest" "-p" name "-j" jobs]]
+depends: [
+  "jbuilder" {build}
+]

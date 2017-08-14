@@ -1,0 +1,7 @@
+
+(jbuild_version 1)
+
+(executable (
+  (name prime_sieves)
+  (public_name prime_sieves)
+  (libraries (lib))))
