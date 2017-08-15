@@ -5,7 +5,10 @@ open Core_bench
 let is_prime_mod n primes = 
   not (Doubly_linked.exists primes ~f:(fun p -> n mod p = 0))
 
-let string_of_dlist dlist = Sexp.to_string_hum ((Doubly_linked.sexp_of_t Int.sexp_of_t) dlist)
+let string_of_dlist dlist =
+  dlist
+  |> Doubly_linked.sexp_of_t Int.sexp_of_t
+  |> Sexp.to_string_hum
 
 let sieve_mod upto =
   let primes = Doubly_linked.create () in
@@ -26,8 +29,8 @@ let sieve_mod upto =
 type heap_entry = Composite of int * int | Empty
                                  
 let heap_entry_cmp a b = match (a, b) with
-  | e, Empty -> -1
-  | Empty, e -> 1
+  | _, Empty -> -1
+  | Empty, _ -> 1
   | Composite (x, xp), Composite (y, yp) -> compare x y
 
 let heap_entry_to_list accum = function
@@ -55,10 +58,14 @@ let rec is_prime_heap ?(bump=false) n heap =
   | Composite (x, p) ->
      (* Printf.printf "Skipping heap entry: %d %d\n" x p; *)
      is_prime_heap ~bump:true n heap
-  
+
+
+(* Simple Estimate from https://en.wikipedia.org/wiki/Prime-counting_function *)
 
 let sieve_heap upto =
-  let heap = (Heap.create ?min_size:(Some 1000) ~cmp:heap_entry_cmp) () in
+  let upto_float = float_of_int upto in
+  let estimate = 1.25506 *. upto_float /. (log upto_float) |> Float.round_up |> int_of_float in
+  let heap = (Heap.create ?min_size:(Some estimate) ~cmp:heap_entry_cmp) () in
   Heap.add heap Empty;
   let rec acc count x = function
     | 0 ->
@@ -97,4 +104,4 @@ let bench sizes =
 let run_mod x = Printf.printf "Mod Primes upto %d: %d\n" x (sieve_mod x)
 let run_heap x = Printf.printf "Heap Primes upto %d: %d\n" x (sieve_heap x)
 (* let run () = run_heap 1000 *)
-let run () = bench [1000; 10_000; 100_000; 1_000_000] 
+let run () = bench [1000; 10_000; 100_000; 1_000_000; 10_000_000] 
